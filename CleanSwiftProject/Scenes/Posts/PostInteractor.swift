@@ -11,7 +11,7 @@
 //
 
 protocol PostBusinessLogic {
-    func doSomething(request: Post.Something.Request)
+    func doLoadInitialData(request: PostScene.Load.Request)
 }
 
 protocol PostDataStore {
@@ -23,11 +23,12 @@ class PostInteractor: PostBusinessLogic, PostDataStore {
     var presenter: PostPresentationLogic?
     var worker: PostWorker?
     
-    func doSomething(request: Post.Something.Request) {
+    func doLoadInitialData(request: PostScene.Load.Request) {
         worker = PostWorker()
-        worker?.doSomeWork()
+        worker?.fetchPosts(completion: { posts in
+            let response = PostScene.Load.Response(posts: posts)
+            self.presenter?.presentInitialData(response: response)
+        })
         
-        let response = Post.Something.Response()
-        presenter?.presentSomething(response: response)
     }
 }

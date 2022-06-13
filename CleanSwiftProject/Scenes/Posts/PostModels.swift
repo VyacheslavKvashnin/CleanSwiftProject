@@ -10,20 +10,20 @@
 //  see http://clean-swift.com
 //
 
-enum Post {
+enum PostScene {
  
     // MARK: Use cases
-    enum Something {
+    enum Load {
         struct Request {
             
         }
         
         struct Response {
-            
+            let posts: [Post]
         }
         
         struct ViewModel {
-            
+            let posts: [Post]
         }
     }
 }

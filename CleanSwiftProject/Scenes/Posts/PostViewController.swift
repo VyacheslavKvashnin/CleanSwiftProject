@@ -13,13 +13,15 @@
 import UIKit
 
 protocol PostDisplayLogic: AnyObject {
-    func displaySomething(viewModel: Post.Something.ViewModel)
+    func displayInitialData(viewModel: PostScene.Load.ViewModel)
 }
 
 class PostViewController: UIViewController {
         
     var interactor: PostBusinessLogic?
     var router: (NSObjectProtocol & PostRoutingLogic & PostDataPassing)?
+    let postView = PostView()
+    var arrayPosts = [Post]()
     
     // MARK: Object lifecycle
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -32,10 +34,20 @@ class PostViewController: UIViewController {
         setup()
     }
     
+    override func loadView() {
+        view = postView
+    }
+    
     // MARK: View lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        doSomething()
+        loadInitialData()
+        
+        postView.tableView.register(PostCell.self, forCellReuseIdentifier: PostCell.cellIdentifier)
+        postView.tableView.dataSource = self
+        postView.tableView.delegate = self
+        
+        title = "VC" 
     }
     
     // MARK: Routing
@@ -48,9 +60,9 @@ class PostViewController: UIViewController {
         }
     }
         
-    private func doSomething() {
-        let request = Post.Something.Request()
-        interactor?.doSomething(request: request)
+    private func loadInitialData() {
+        let request = PostScene.Load.Request()
+        interactor?.doLoadInitialData(request: request)
     }
     
     // MARK: Setup
@@ -69,7 +81,31 @@ class PostViewController: UIViewController {
 }
 
 extension PostViewController: PostDisplayLogic {
-    func displaySomething(viewModel: Post.Something.ViewModel) {
-        
+    func displayInitialData(viewModel: PostScene.Load.ViewModel) {
+        arrayPosts = viewModel.posts
+        postView.tableView.reloadData()
     }
+}
+
+extension PostViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        arrayPosts.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: PostCell.cellIdentifier, for: indexPath) as? PostCell {
+            let post = arrayPosts[indexPath.row]
+            cell.titleLabel.text = post.title
+            cell.contentLabel.text = post.body
+            return cell
+        } else {
+            return UITableViewCell()
+        }
+    }
+    
+    
+}
+
+extension PostViewController: UITableViewDelegate {
+    
 }

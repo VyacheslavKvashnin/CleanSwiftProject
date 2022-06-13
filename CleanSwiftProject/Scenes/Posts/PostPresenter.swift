@@ -11,15 +11,15 @@
 //
 
 protocol PostPresentationLogic {
-    func presentSomething(response: Post.Something.Response)
+    func presentInitialData(response: PostScene.Load.Response)
 }
 
 class PostPresenter: PostPresentationLogic {
     
     weak var viewController: PostDisplayLogic?
     
-    func presentSomething(response: Post.Something.Response) {
-        let viewModel = Post.Something.ViewModel()
-        viewController?.displaySomething(viewModel: viewModel)
+    func presentInitialData(response: PostScene.Load.Response) {
+        let viewModel = PostScene.Load.ViewModel(posts: response.posts)
+        viewController?.displayInitialData(viewModel: viewModel)
     }
 }

@@ -11,7 +11,10 @@
 //
 
 class PostWorker {
-    func doSomeWork() {
-        
+    
+    func fetchPosts(completion: @escaping([Post]) -> Void) {
+        NetworkManager.shared.fetchPosts { posts in
+            completion(posts)
+        }
     }
 }
